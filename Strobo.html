@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Estrobo 1–60 Hz</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .controls {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+
+    .row {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin-right: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #startBtn {
+      background-color: #4caf50;
+      color: #ffffff;
+    }
+
+    #stopBtn {
+      background-color: #f44336;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h1>Generador de luz estroboscópica 1–60 Hz</h1>
+
+    <div class="row">
+      Frecuencia: <span id="freqLabel">10 Hz</span>
+    </div>
+
+    <div class="row">
+      <input
+        type="range"
+        id="freqRange"
+        min="1"
+        max="60"
+        step="1"
+        value="10"
+      />
+    </div>
+
+    <div class="row">
+      <button id="startBtn">Iniciar</button>
+      <button id="stopBtn">Detener</button>
+    </div>
+  </div>
+
+  <script>
+    const freqRange = document.getElementById("freqRange");
+    const freqLabel = document.getElementById("freqLabel");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+
+    let intervalId = null;
+    let isWhite = false;
+    let frequency = parseFloat(freqRange.value);
+
+    function actualizarEtiqueta() {
+      freqLabel.textContent = frequency.toFixed(0) + " Hz";
+    }
+
+    function detener() {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      isWhite = false;
+      document.body.style.backgroundColor = "#000000";
+    }
+
+    function iniciar() {
+      detener();
+
+      const intervaloMs = 1000 / (2 * frequency);
+
+      intervalId = setInterval(() => {
+        isWhite = !isWhite;
+        document.body.style.backgroundColor =
+          isWhite ? "#ffffff" : "#000000";
+      }, intervaloMs);
+    }
+
+    freqRange.addEventListener("input", () => {
+      frequency = parseFloat(freqRange.value);
+      actualizarEtiqueta();
+      if (intervalId !== null) {
+        iniciar();
+      }
+    });
+
+    startBtn.addEventListener("click", iniciar);
+    stopBtn.addEventListener("click", detener);
+
+    actualizarEtiqueta();
+  </script>
+</body>
+</html>
